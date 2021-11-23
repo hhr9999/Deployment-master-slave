@@ -1,0 +1,8 @@
+#!/bin/bash
+mysql_log_file=$({{ pillar['mysql_install_dir'] }}/mysql/bin/mysql -u{{ pillar['mysql_user'] }} -p1 -h{{ pillar['mysql_zhu_ip'] }} -e 'show master status;' | grep mysql_bin | awk '{print $1}')
+
+mysql_log_pos=$({{ pillar['mysql_install_dir'] }}/mysql/bin/mysql -u{{ pillar['mysql_user'] }} -p1 -h{{ pillar['mysql_zhu_ip'] }} -e 'show master status;' | grep mysql_bin | awk '{print $2}')
+
+
+{{ pillar['mysql_install_dir'] }}/mysql/bin/mysql -uroot -p{{ pillar['mysql_password'] }} -e "change master to master_host='{{ pillar['mysql_zhu_ip'] }}', master_user='{{ pillar['mysql_user'] }}', master_password='1', master_log_file='$mysql_log_file', master_log_pos=$mysql_log_pos;start slave;show slave status \G;"
+
